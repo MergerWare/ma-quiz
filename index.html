@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>M&A Personality Index — Discover Your Dealmaker Archetype</title>
+<meta property="og:title" content="What's Your M&A Personality? Take the Quiz">
+<meta property="og:description" content="12 questions. 4 archetypes. Discover how you really operate in deals, negotiations, and integrations.">
+<meta property="og:type" content="website">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+<style>
+:root {
+  --ink: #0a0a0f;
+  --paper: #f5f0e8;
+  --gold: #c9a84c;
+  --gold-light: #e8d49a;
+  --red: #8b1a1a;
+  --slate: #2c3e50;
+  --muted: #7a7169;
+  --line: rgba(10,10,15,0.12);
+  --green: #1a5c3a;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'DM Mono', monospace;
+  background: var(--paper);
+  color: var(--ink);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+body::before {
+  content:'';
+  position:fixed; inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events:none; z-index:999; opacity:0.5;
+}
+.container { max-width:760px; margin:0 auto; padding:0 24px; }
+
+/* HEADER */
+header {
+  border-bottom:2px solid var(--ink);
+  padding:20px 0 16px;
+  display:flex; justify-content:space-between; align-items:baseline;
+}
+.masthead { font-family:'Playfair Display',serif; font-size:13px; font-weight:700; letter-spacing:0.15em; text-transform:uppercase; }
+.issue-info { font-size:10px; letter-spacing:0.1em; color:var(--muted); text-transform:uppercase; }
+
+/* HERO */
+.hero { padding:60px 0 40px; border-bottom:1px solid var(--line); }
+.eyebrow { font-size:10px; letter-spacing:0.2em; text-transform:uppercase; color:var(--gold); margin-bottom:20px; display:flex; align-items:center; gap:12px; }
+.eyebrow::after { content:''; flex:1; height:1px; background:var(--gold); max-width:60px; }
+.hero h1 { font-family:'Playfair Display',serif; font-size:clamp(42px,7vw,72px); font-weight:900; line-height:0.95; letter-spacing:-0.02em; margin-bottom:24px; }
+.hero h1 em { font-style:italic; color:var(--red); }
+.hero-sub { font-size:12px; line-height:1.8; color:var(--muted); max-width:480px; letter-spacing:0.02em; }
+
+/* SCREENS */
+.screen { display:none; }
+.screen.active { display:block; animation:fadeIn 0.5s ease; }
+
+/* START */
+#start-screen { padding:40px 0; }
+.meta-grid { display:grid; grid-template-columns:repeat(3,1fr); border:1px solid var(--line); margin:40px 0; }
+.meta-item { padding:20px; border-right:1px solid var(--line); text-align:center; }
+.meta-item:last-child { border-right:none; }
+.meta-num { font-family:'Playfair Display',serif; font-size:36px; font-weight:700; display:block; }
+.meta-label { font-size:9px; letter-spacing:0.15em; text-transform:uppercase; color:var(--muted); margin-top:4px; display:block; }
+
+/* BUTTONS */
+.btn-primary {
+  display:inline-flex; align-items:center; gap:12px;
+  background:var(--ink); color:var(--paper);
+  font-family:'DM Mono',monospace; font-size:11px; letter-spacing:0.15em; text-transform:uppercase;
+  padding:16px 32px; border:none; cursor:pointer;
+  transition:all 0.2s; position:relative; overflow:hidden;
+}
+.btn-primary::before { content:''; position:absolute; left:0; top:0; bottom:0; width:0; background:var(--red); transition:width 0.3s ease; z-index:0; }
+.btn-primary:hover::before { width:100%; }
+.btn-primary span { position:relative; z-index:1; }
+.btn-arrow { font-size:16px; position:relative; z-index:1; transition:transform 0.2s; }
+.btn-primary:hover .btn-arrow { transform:translateX(4px); }
+.btn-primary:disabled { opacity:0.4; cursor:not-allowed; }
+.btn-primary:disabled::before { display:none; }
+
+.btn-ghost {
+  background:transparent; border:1px solid var(--line);
+  font-family:'DM Mono',monospace; font-size:10px; letter-spacing:0.15em; text-transform:uppercase;
+  padding:12px 24px; cursor:pointer; color:var(--muted); transition:all 0.2s;
+}
+.btn-ghost:hover { border-color:var(--ink); color:var(--ink); }
+
+.btn-outline {
+  display:inline-flex; align-items:center; gap:10px;
+  background:transparent; border:1px solid var(--ink); color:var(--ink);
+  font-family:'DM Mono',monospace; font-size:11px; letter-spacing:0.12em; text-transform:uppercase;
+  padding:14px 24px; cursor:pointer; transition:all 0.2s;
+}
+.btn-outline:hover { background:var(--ink); color:var(--paper); }
+
+/* LEAD CAPTURE SCREEN */
+#capture-screen { padding:40px 0; }
+.capture-intro { margin-bottom:36px; }
+.capture-intro h2 { font-family:'Playfair Display',serif; font-size:clamp(24px,4vw,36px); font-weight:700; margin-bottom:12px; }
+.capture-intro p { font-size:12px; line-height:1.8; color:var(--muted); max-width:480px; }
+.form-card { border:1px solid var(--line); padding:36px; background:rgba(255,255,255,0.4); }
+.form-row { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px; }
+.form-group { display:flex; flex-direction:column; gap:8px; }
+.form-group.full { grid-column:1/-1; }
+label { font-size:9px; letter-spacing:0.2em; text-transform:uppercase; color:var(--muted); }
+input, select {
+  font-family:'DM Mono',monospace; font-size:12px; color:var(--ink);
+  background:var(--paper); border:1px solid var(--line);
+  padding:12px 14px; outline:none; transition:border-color 0.2s; width:100%;
+}
+input:focus, select:focus { border-color:var(--gold); }
+input::placeholder { color:var(--muted); opacity:0.6; }
+.form-note { font-size:10px; color:var(--muted); margin-top:12px; line-height:1.6; }
+.form-actions { margin-top:28px; display:flex; align-items:center; gap:20px; flex-wrap:wrap; }
+.skip-link { font-size:10px; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); cursor:pointer; text-decoration:underline; }
+.skip-link:hover { color:var(--ink); }
+
+/* QUIZ SCREEN */
+#quiz-screen { padding:40px 0; }
+.progress-bar-wrap { margin-bottom:48px; }
+.progress-meta { display:flex; justify-content:space-between; font-size:9px; letter-spacing:0.15em; text-transform:uppercase; color:var(--muted); margin-bottom:10px; }
+.progress-track { height:2px; background:var(--line); }
+.progress-fill { height:100%; background:var(--gold); transition:width 0.5s cubic-bezier(0.4,0,0.2,1); }
+.q-number { font-family:'Playfair Display',serif; font-size:11px; color:var(--gold); letter-spacing:0.1em; margin-bottom:12px; }
+.q-text { font-family:'Playfair Display',serif; font-size:clamp(20px,3.5vw,28px); font-weight:700; line-height:1.3; margin-bottom:40px; padding-bottom:24px; border-bottom:1px solid var(--line); }
+.options-list { list-style:none; display:flex; flex-direction:column; gap:12px; }
+.option-btn {
+  width:100%; text-align:left; padding:20px 24px;
+  background:transparent; border:1px solid var(--line);
+  cursor:pointer; font-family:'DM Mono',monospace; font-size:12px; line-height:1.6; color:var(--ink);
+  display:flex; gap:20px; align-items:flex-start; transition:all 0.2s; position:relative; overflow:hidden;
+}
+.option-btn::after { content:''; position:absolute; left:0; top:0; bottom:0; width:3px; background:var(--gold); transform:scaleY(0); transition:transform 0.2s; transform-origin:bottom; }
+.option-btn:hover { background:rgba(201,168,76,0.06); border-color:var(--gold); }
+.option-btn:hover::after { transform:scaleY(1); }
+.option-btn.selected { background:var(--ink); color:var(--paper); border-color:var(--ink); }
+.option-btn.selected::after { background:var(--gold); transform:scaleY(1); }
+.opt-letter { font-weight:500; color:var(--gold); min-width:18px; font-size:11px; padding-top:1px; }
+.option-btn.selected .opt-letter { color:var(--gold-light); }
+.quiz-nav { margin-top:40px; display:flex; justify-content:space-between; align-items:center; }
+
+/* RESULT SCREEN */
+#result-screen { padding:40px 0 80px; }
+.result-header { border-bottom:2px solid var(--ink); padding-bottom:24px; margin-bottom:40px; }
+.result-label { font-size:9px; letter-spacing:0.2em; text-transform:uppercase; color:var(--muted); margin-bottom:8px; }
+.result-archetype { font-family:'Playfair Display',serif; font-size:clamp(36px,6vw,60px); font-weight:900; line-height:0.95; letter-spacing:-0.02em; color:var(--red); }
+.result-tagline { font-size:13px; color:var(--muted); margin-top:12px; font-style:italic; }
+
+.result-grid { display:grid; grid-template-columns:1fr 1fr; gap:1px; background:var(--line); border:1px solid var(--line); margin-bottom:40px; }
+.result-cell { background:var(--paper); padding:24px; }
+.cell-label { font-size:9px; letter-spacing:0.2em; text-transform:uppercase; color:var(--gold); margin-bottom:10px; }
+.cell-content { font-size:11px; line-height:1.7; color:var(--slate); }
+.traits-list { display:flex; flex-wrap:wrap; gap:8px; margin-top:8px; }
+.trait-tag { font-size:9px; letter-spacing:0.1em; text-transform:uppercase; padding:4px 10px; border:1px solid var(--line); color:var(--muted); }
+
+.description-block { border-left:3px solid var(--gold); padding:20px 24px; background:rgba(201,168,76,0.05); margin-bottom:40px; }
+.description-block p { font-size:13px; line-height:1.8; color:var(--slate); }
+
+.section-title { font-family:'Playfair Display',serif; font-size:16px; font-weight:700; border-bottom:1px solid var(--line); padding-bottom:12px; margin-bottom:20px; }
+
+.compat-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:40px; }
+.compat-card { border:1px solid var(--line); padding:16px; }
+.compat-card.works { border-color:rgba(139,26,26,0.3); }
+.compat-card.clash { border-color:rgba(44,62,80,0.3); }
+.compat-type { font-size:9px; letter-spacing:0.15em; text-transform:uppercase; margin-bottom:6px; }
+.compat-card.works .compat-type { color:var(--red); }
+.compat-card.clash .compat-type { color:var(--slate); }
+.compat-name { font-family:'Playfair Display',serif; font-size:15px; font-weight:700; }
+.compat-note { font-size:10px; color:var(--muted); margin-top:4px; line-height:1.5; }
+
+/* ACTION BUTTONS */
+.action-row { display:flex; gap:12px; flex-wrap:wrap; margin-bottom:40px; padding:28px; background:rgba(10,10,15,0.03); border:1px solid var(--line); }
+.action-row-title { font-size:9px; letter-spacing:0.2em; text-transform:uppercase; color:var(--muted); margin-bottom:16px; width:100%; }
+.action-btn {
+  display:inline-flex; align-items:center; gap:8px;
+  font-family:'DM Mono',monospace; font-size:10px; letter-spacing:0.12em; text-transform:uppercase;
+  padding:12px 20px; cursor:pointer; transition:all 0.2s; border:1px solid var(--ink); background:transparent; color:var(--ink);
+}
+.action-btn:hover { background:var(--ink); color:var(--paper); }
+.action-btn.primary-action { background:var(--ink); color:var(--paper); }
+.action-btn.primary-action:hover { background:var(--red); border-color:var(--red); }
+.action-btn .icon { font-size:14px; }
+
+/* SHARE CARD MODAL */
+.modal-overlay {
+  position:fixed; inset:0; background:rgba(10,10,15,0.7); z-index:100;
+  display:flex; align-items:center; justify-content:center; padding:20px;
+  animation:fadeIn 0.3s ease;
+}
+.modal-overlay.hidden { display:none; }
+.modal { background:var(--paper); max-width:540px; width:100%; padding:36px; position:relative; max-height:90vh; overflow-y:auto; }
+.modal-close { position:absolute; top:16px; right:16px; background:none; border:none; font-size:20px; cursor:pointer; color:var(--muted); }
+.modal-close:hover { color:var(--ink); }
+.modal h3 { font-family:'Playfair Display',serif; font-size:20px; font-weight:700; margin-bottom:8px; }
+.modal p { font-size:11px; color:var(--muted); line-height:1.7; margin-bottom:24px; }
+
+/* SHARE CARD */
+#share-card {
+  width:100%; aspect-ratio:1.91/1; background:var(--ink); color:var(--paper);
+  padding:40px; display:flex; flex-direction:column; justify-content:space-between;
+  font-family:'Playfair Display',serif; position:relative; overflow:hidden;
+  margin-bottom:20px;
+}
+#share-card::before {
+  content:''; position:absolute; top:-60px; right:-60px;
+  width:200px; height:200px; border:40px solid rgba(201,168,76,0.15); border-radius:50%;
+}
+#share-card::after {
+  content:''; position:absolute; bottom:-40px; left:-40px;
+  width:140px; height:140px; border:30px solid rgba(201,168,76,0.08); border-radius:50%;
+}
+.card-top { display:flex; justify-content:space-between; align-items:flex-start; }
+.card-label { font-family:'DM Mono',monospace; font-size:8px; letter-spacing:0.2em; text-transform:uppercase; color:var(--gold); }
+.card-badge { font-family:'DM Mono',monospace; font-size:8px; letter-spacing:0.1em; color:rgba(255,255,255,0.4); text-transform:uppercase; }
+.card-middle { position:relative; z-index:1; }
+.card-personality { font-size:clamp(22px,4vw,36px); font-weight:900; line-height:1.0; letter-spacing:-0.02em; color:white; }
+.card-tagline { font-size:11px; font-style:italic; color:var(--gold-light); margin-top:6px; }
+.card-bottom { display:flex; justify-content:space-between; align-items:flex-end; font-family:'DM Mono',monospace; }
+.card-traits { display:flex; gap:6px; flex-wrap:wrap; }
+.card-trait { font-size:7px; letter-spacing:0.1em; text-transform:uppercase; border:1px solid rgba(201,168,76,0.4); padding:3px 7px; color:var(--gold-light); }
+.card-url { font-size:8px; letter-spacing:0.1em; color:rgba(255,255,255,0.3); }
+
+.share-actions { display:flex; gap:10px; flex-wrap:wrap; }
+
+/* TOAST */
+.toast {
+  position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(100px);
+  background:var(--ink); color:var(--paper); font-family:'DM Mono',monospace;
+  font-size:11px; letter-spacing:0.1em; padding:14px 24px; z-index:200;
+  transition:transform 0.3s cubic-bezier(0.4,0,0.2,1);
+}
+.toast.show { transform:translateX(-50%) translateY(0); }
+
+/* EMAIL STATUS */
+.email-status { display:none; margin-top:12px; font-size:11px; padding:12px 16px; border:1px solid; }
+.email-status.success { border-color:var(--green); color:var(--green); background:rgba(26,92,58,0.05); }
+.email-status.error { border-color:var(--red); color:var(--red); background:rgba(139,26,26,0.05); }
+
+.restart-row { margin-top:48px; padding-top:24px; border-top:1px solid var(--line); display:flex; align-items:center; gap:16px; }
+.restart-row span { font-size:10px; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); }
+
+@keyframes fadeIn { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+@media(max-width:540px) {
+  .result-grid,.compat-grid,.form-row { grid-template-columns:1fr; }
+  .meta-grid { grid-template-columns:1fr; }
+  .meta-item { border-right:none; border-bottom:1px solid var(--line); }
+  .action-row { flex-direction:column; }
+  .action-btn { width:100%; justify-content:center; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="masthead">M&A Personality Index</div>
+    <div class="issue-info">Assessment Report · 2025 Edition</div>
+  </header>
+
+  <div class="hero">
+    <div class="eyebrow">Dealmaker Profiling</div>
+    <h1>What's Your<br><em>M&A</em><br>Archetype?</h1>
+    <p class="hero-sub">12 questions. 4 archetypes. Discover how you really operate in deals, negotiations, and integrations — then share your result.</p>
+  </div>
+
+  <!-- START SCREEN -->
+  <div id="start-screen" class="screen active">
+    <div class="meta-grid">
+      <div class="meta-item"><span class="meta-num">12</span><span class="meta-label">Questions</span></div>
+      <div class="meta-item"><span class="meta-num">4</span><span class="meta-label">Archetypes</span></div>
+      <div class="meta-item"><span class="meta-num">3</span><span class="meta-label">Min. to complete</span></div>
+    </div>
+    <button class="btn-primary" onclick="showScreen('capture-screen')">
+      <span>Begin Assessment</span><span class="btn-arrow">→</span>
+    </button>
+  </div>
+
+  <!-- LEAD CAPTURE SCREEN -->
+  <div id="capture-screen" class="screen">
+    <div class="capture-intro">
+      <h2>Before we begin,<br>tell us about yourself</h2>
+      <p>We'll send your personalised results report directly to your inbox. All fields are optional — you can skip ahead to start the quiz.</p>
+    </div>
+    <div class="form-card">
+      <div class="form-row">
+        <div class="form-group"><label>First Name</label><input type="text" id="f-first" placeholder="Jane"></div>
+        <div class="form-group"><label>Last Name</label><input type="text" id="f-last" placeholder="Smith"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group full"><label>Work Email</label><input type="email" id="f-email" placeholder="jane@company.com"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Company</label><input type="text" id="f-company" placeholder="Acme Capital"></div>
+        <div class="form-group"><label>Role</label>
+          <select id="f-role">
+            <option value="">Select your role</option>
+            <option>CEO / C-Suite</option>
+            <option>Managing Director</option>
+            <option>VP / Director</option>
+            <option>Associate / Analyst</option>
+            <option>Advisor / Consultant</option>
+            <option>Investor / PE/VC</option>
+            <option>Legal / Compliance</option>
+            <option>Other</option>
+          </select>
+        </div>
+      </div>
+      <p class="form-note">🔒 Your data is never shared or sold. We'll only email you your results and (occasionally) insights on M&A strategy.</p>
+    </div>
+    <div class="form-actions">
+      <button class="btn-primary" onclick="startQuiz()">
+        <span>Start the Quiz</span><span class="btn-arrow">→</span>
+      </button>
+      <span class="skip-link" onclick="startQuiz()">Skip & start anonymously</span>
+    </div>
+  </div>
+
+  <!-- QUIZ SCREEN -->
+  <div id="quiz-screen" class="screen">
+    <div class="progress-bar-wrap">
+      <div class="progress-meta">
+        <span id="q-counter">Question 1 of 12</span>
+        <span id="q-pct">0% complete</span>
+      </div>
+      <div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+    </div>
+    <div class="q-number" id="q-number">01 —</div>
+    <div class="q-text" id="q-text"></div>
+    <ul class="options-list" id="options-list"></ul>
+    <div class="quiz-nav">
+      <button class="btn-ghost" id="prev-btn" onclick="prevQuestion()" style="visibility:hidden">← Previous</button>
+      <button class="btn-primary" id="next-btn" onclick="nextQuestion()" disabled>
+        <span id="next-label">Next Question</span><span class="btn-arrow">→</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- RESULT SCREEN -->
+  <div id="result-screen" class="screen">
+    <div class="result-header">
+      <div class="result-label" id="result-greeting">Your M&A Personality is</div>
+      <div class="result-archetype" id="result-name"></div>
+      <div class="result-tagline" id="result-tagline"></div>
+    </div>
+
+    <div class="description-block"><p id="result-description"></p></div>
+
+    <div class="result-grid">
+      <div class="result-cell"><div class="cell-label">Deal Style</div><div class="cell-content" id="result-style"></div></div>
+      <div class="result-cell"><div class="cell-label">Greatest Strength</div><div class="cell-content" id="result-strength"></div></div>
+      <div class="result-cell"><div class="cell-label">Watch Out For</div><div class="cell-content" id="result-weakness"></div></div>
+      <div class="result-cell"><div class="cell-label">Core Traits</div><div class="cell-content"><div class="traits-list" id="result-traits"></div></div></div>
+    </div>
+
+    <div class="section-title">Deal Chemistry</div>
+    <div class="compat-grid">
+      <div class="compat-card works">
+        <div class="compat-type">Works Well With</div>
+        <div class="compat-name" id="works-with"></div>
+        <div class="compat-note" id="works-note"></div>
+      </div>
+      <div class="compat-card clash">
+        <div class="compat-type">Tension With</div>
+        <div class="compat-name" id="clashes-with"></div>
+        <div class="compat-note" id="clashes-note"></div>
+      </div>
+    </div>
+
+    <!-- ACTION ROW -->
+    <div class="action-row">
+      <div class="action-row-title">Take your results with you</div>
+      <button class="action-btn primary-action" onclick="downloadPDF()"><span class="icon">⬇</span> Download PDF Report</button>
+      <button class="action-btn" onclick="openShareModal()"><span class="icon">🖼</span> Share Image Card</button>
+      <button class="action-btn" id="email-btn" onclick="emailResults()"><span class="icon">✉</span> Email My Results</button>
+      <button class="action-btn" onclick="copyLink()"><span class="icon">🔗</span> Copy Quiz Link</button>
+    </div>
+    <div id="email-status" class="email-status"></div>
+
+    <div class="restart-row">
+      <button class="btn-primary" onclick="restartQuiz()"><span>Retake Assessment</span><span class="btn-arrow">↺</span></button>
+      <span>Results may vary — context changes everything.</span>
+    </div>
+  </div>
+</div><!-- /container -->
+
+<!-- SHARE CARD MODAL -->
+<div class="modal-overlay hidden" id="share-modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeShareModal()">✕</button>
+    <h3>Your Shareable Card</h3>
+    <p>Screenshot this card and share it on LinkedIn, Twitter/X, or WhatsApp to let your network discover their archetype.</p>
+    <div id="share-card">
+      <div class="card-top">
+        <div class="card-label">M&A Personality Index</div>
+        <div class="card-badge">2025 Edition</div>
+      </div>
+      <div class="card-middle">
+        <div class="card-personality" id="card-name"></div>
+        <div class="card-tagline" id="card-tagline"></div>
+      </div>
+      <div class="card-bottom">
+        <div class="card-traits" id="card-traits"></div>
+        <div class="card-url">ma-personality-index.com</div>
+      </div>
+    </div>
+    <div class="share-actions">
+      <button class="action-btn primary-action" onclick="shareToLinkedIn()"><span class="icon">in</span> Share on LinkedIn</button>
+      <button class="action-btn" onclick="shareToTwitter()"><span class="icon">𝕏</span> Share on X / Twitter</button>
+      <button class="action-btn" onclick="copyShareText()"><span class="icon">📋</span> Copy Share Text</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ─── EmailJS Configuration ───────────────────────────────────────────
+// TO ENABLE REAL EMAILS:
+// 1. Go to https://www.emailjs.com and create a free account
+// 2. Create an Email Service (Gmail recommended)
+// 3. Create an Email Template with these variables:
+//    {{to_email}}, {{to_name}}, {{archetype}}, {{tagline}}, {{description}},
+//    {{style}}, {{strength}}, {{weakness}}, {{traits}}, {{quiz_url}}
+// 4. Replace the values below with your actual IDs
+const EMAILJS_SERVICE_ID = 'YOUR_SERVICE_ID';      // e.g. 'service_abc123'
+const EMAILJS_TEMPLATE_ID = 'YOUR_TEMPLATE_ID';    // e.g. 'template_xyz789'
+const EMAILJS_PUBLIC_KEY = 'YOUR_PUBLIC_KEY';      // from Account > API Keys
+// ─────────────────────────────────────────────────────────────────────
+
+const QUIZ_URL = window.location.href;
+
+const QUESTIONS = [
+  { text:"When evaluating a potential acquisition, your first instinct is to:", options:[
+    {text:"Run a thorough financial model and stress-test every assumption",type:"A"},
+    {text:"Get on the phone with management and gauge their energy",type:"B"},
+    {text:"Research the competitive moat and long-term strategic fit",type:"C"},
+    {text:"Look at comparable transactions and market timing",type:"D"}]},
+  { text:"A deal is at 11pm, close to signing, but a material issue surfaces in due diligence. You:", options:[
+    {text:"Demand a price reduction or walk away — the numbers don't lie",type:"A"},
+    {text:"Pick up the phone, have a direct conversation with the CEO, and find a solution together",type:"B"},
+    {text:"Pause and reassess whether the strategic thesis still holds",type:"C"},
+    {text:"Push through — execution risk is always manageable post-close",type:"D"}]},
+  { text:"Your reputation in the deal community is best described as:", options:[
+    {text:"The detail-obsessed one who finds skeletons others miss",type:"A"},
+    {text:"The relationship builder who can get deals done others can't",type:"B"},
+    {text:"The visionary who spots opportunities before the market does",type:"C"},
+    {text:"The closer who moves fast and creates urgency",type:"D"}]},
+  { text:"Post-merger integration — how involved are you?", options:[
+    {text:"Deeply hands-on. I built the 100-day plan before we signed",type:"A"},
+    {text:"I focus on the people: culture, leadership alignment, retention",type:"B"},
+    {text:"I delegate to ops but stay close to the big strategic bets",type:"C"},
+    {text:"I hand it off and start sourcing the next deal",type:"D"}]},
+  { text:"How do you feel about hostile takeovers?", options:[
+    {text:"Uncomfortable — relationships matter more than the deal",type:"B"},
+    {text:"They're a valid tool if the price and thesis are right",type:"C"},
+    {text:"Exciting — the tension can unlock real value",type:"D"},
+    {text:"I'd want ironclad legal protection and financial modelling before considering it",type:"A"}]},
+  { text:"The target company's management team is resistant to the deal. Your approach:", options:[
+    {text:"Understand their concerns deeply and co-create the vision with them",type:"B"},
+    {text:"Present a compelling 5-year strategic plan for why this is the right move",type:"C"},
+    {text:"Restructure the deal terms to make it economically irresistible",type:"A"},
+    {text:"Escalate to the board and create a sense of inevitability",type:"D"}]},
+  { text:"Which type of deal excites you most?", options:[
+    {text:"A distressed asset with deep value buried under operational chaos",type:"A"},
+    {text:"A founder-led business where trust and relationship are the moat",type:"B"},
+    {text:"A transformative merger that reshapes an industry",type:"C"},
+    {text:"A competitive auction you win on speed and conviction",type:"D"}]},
+  { text:"Your advisory team is pushing back on a deal you believe in. You:", options:[
+    {text:"Show them the numbers — data wins every argument",type:"A"},
+    {text:"Hear them out fully before deciding; good relationships require trust",type:"B"},
+    {text:"Articulate the 10-year vision they're not seeing",type:"C"},
+    {text:"Move decisively — committees kill good deals",type:"D"}]},
+  { text:"Which risk concerns you most in any transaction?", options:[
+    {text:"Financial and legal exposure hidden in the books",type:"A"},
+    {text:"Culture clash destroying talent post-close",type:"B"},
+    {text:"Strategic misalignment undermining the thesis years later",type:"C"},
+    {text:"Missing the window — a competitor moving faster than you",type:"D"}]},
+  { text:"How do you build a deal thesis?", options:[
+    {text:"Bottom-up from the financials, then work up to strategy",type:"A"},
+    {text:"Start with who — the right management team can execute anything",type:"B"},
+    {text:"Top-down from macro trends and industry disruption vectors",type:"C"},
+    {text:"Market-in: look at what's moving and where capital is flowing",type:"D"}]},
+  { text:"A deal you championed falls apart at the last minute. Your reaction:", options:[
+    {text:"Run a rigorous post-mortem — extract every lesson from the failure",type:"A"},
+    {text:"Reach out to the other side to keep the relationship warm for the future",type:"B"},
+    {text:"Revisit your thesis — maybe the market just wasn't ready yet",type:"C"},
+    {text:"Get back out there immediately — the next deal is already calling",type:"D"}]},
+  { text:"Ultimately, what defines a truly successful deal for you?", options:[
+    {text:"It generates the projected returns — everything else is noise",type:"A"},
+    {text:"Both organisations thrived and the people grew with the combined entity",type:"B"},
+    {text:"It shifted the competitive landscape in a lasting, strategic way",type:"C"},
+    {text:"It was closed faster and cleaner than anyone thought possible",type:"D"}]}
+];
+
+const ARCHETYPES = {
+  A:{
+    name:"The Forensic Architect",
+    tagline:"Every deal is a puzzle. Every number tells a story.",
+    description:"You are the backbone of any deal team — meticulous, rigorous, and relentlessly analytical. Where others see a promising acquisition, you see a thousand variables that need stress-testing. Your due diligence is legendary, and you've killed more bad deals than you've closed good ones. That's not a weakness — that's discipline. You believe that financial and legal precision is the ultimate competitive advantage, and history has proved you right more often than not.",
+    style:"Bottom-up, data-driven. You model before you meet management.",
+    strength:"Unmatched due diligence. You catch what others miss.",
+    weakness:"Analysis paralysis. Perfect can become the enemy of closed.",
+    traits:["Detail-Oriented","Risk-Aware","Systematic","Disciplined"],
+    worksWith:"The Relationship Weaver",
+    worksNote:"Their people instincts balance your number obsession into a complete deal team.",
+    clashesWith:"The Speed Trader",
+    clashesNote:"They move faster than your process allows. Expect friction on timelines."
+  },
+  B:{
+    name:"The Relationship Weaver",
+    tagline:"Deals are made by people, for people.",
+    description:"For you, every transaction is fundamentally a human story. You build trust where others build spreadsheets. Founders open up to you. Management teams follow you into the unknown. Your network is worth more than most deal models, and your ability to sense cultural fit gives you an edge that no financial engineering can replicate. You believe the most undervalued asset in any M&A process is genuine human alignment — and you've built a career proving it.",
+    style:"Relationship-first, empathy-led. You know the CEO's story before the financials.",
+    strength:"Access and trust. You get calls others don't.",
+    weakness:"Overoptimism about people. Founders are sometimes telling you what you want to hear.",
+    traits:["Empathetic","Trusted","Network-Rich","Culturally Aware"],
+    worksWith:"The Forensic Architect",
+    worksNote:"Their analytical rigour keeps your optimism grounded in reality.",
+    clashesWith:"The Strategic Visionary",
+    clashesNote:"They see people as resources for a vision. You see the vision as being about people."
+  },
+  C:{
+    name:"The Strategic Visionary",
+    tagline:"The best deal is the one the market hasn't priced yet.",
+    description:"You think in decades when others think in quarters. Your M&A thesis is never just about the asset at hand — it's about the shape of an industry five years from now, the disruption vectors no one has mapped, the white space that becomes obvious only in retrospect. You've been called ahead of your time, occasionally to your detriment, but more often in ways that created extraordinary value. When you champion a deal, you're placing a strategic bet on the future.",
+    style:"Top-down, thesis-driven. You see the forest when others are counting trees.",
+    strength:"Transformative conviction. You spot category-defining opportunities.",
+    weakness:"Execution gap. Grand visions need operational ruthlessness to realize.",
+    traits:["Forward-Thinking","Thesis-Driven","Bold","Pattern-Recognizing"],
+    worksWith:"The Speed Trader",
+    worksNote:"They can execute your vision with urgency. The combo is formidable.",
+    clashesWith:"The Forensic Architect",
+    clashesNote:"They want to validate what you've already decided. Productive but slow."
+  },
+  D:{
+    name:"The Speed Trader",
+    tagline:"Window opens. Window closes. Be inside.",
+    description:"You have an almost physical relationship with deal momentum. You understand that market timing is a competitive weapon, that hesitation is indistinguishable from incompetence in a hot process, and that moving with conviction — before the full picture is clear — is genuinely rare. You've closed deals that others were still analysing. Your reputation for decisiveness makes counterparties take you seriously. The risk? You move fast enough that the occasional miss is structurally inevitable. You've made peace with that.",
+    style:"Market-driven, conviction-paced. You treat speed as a form of intelligence.",
+    strength:"Decisive execution. You close when others hesitate.",
+    weakness:"Underestimating integration complexity. Speed pre-close ≠ speed post-close.",
+    traits:["Decisive","Competitive","Market-Aware","High-Conviction"],
+    worksWith:"The Strategic Visionary",
+    worksNote:"Their thesis gives your speed a direction. Together, you're unstoppable.",
+    clashesWith:"The Forensic Architect",
+    clashesNote:"They need one more week. You needed to sign yesterday. Classic tension."
+  }
+};
+
+// STATE
+let currentQ = 0;
+let answers = [];
+let scores = {A:0,B:0,C:0,D:0};
+let currentArchetype = null;
+let userData = {};
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function startQuiz() {
+  // Capture lead data
+  userData = {
+    firstName: document.getElementById('f-first').value.trim(),
+    lastName: document.getElementById('f-last').value.trim(),
+    email: document.getElementById('f-email').value.trim(),
+    company: document.getElementById('f-company').value.trim(),
+    role: document.getElementById('f-role').value
+  };
+  scores = {A:0,B:0,C:0,D:0};
+  answers = [];
+  currentQ = 0;
+  showScreen('quiz-screen');
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const q = QUESTIONS[currentQ];
+  const n = currentQ+1;
+  document.getElementById('q-counter').textContent = `Question ${n} of ${QUESTIONS.length}`;
+  document.getElementById('q-pct').textContent = `${Math.round((currentQ/QUESTIONS.length)*100)}% complete`;
+  document.getElementById('progress-fill').style.width = `${(currentQ/QUESTIONS.length)*100}%`;
+  document.getElementById('q-number').textContent = String(n).padStart(2,'0')+' —';
+  document.getElementById('q-text').textContent = q.text;
+  const list = document.getElementById('options-list');
+  list.innerHTML='';
+  ['A','B','C','D'].forEach((letter,i)=>{
+    const li=document.createElement('li');
+    const btn=document.createElement('button');
+    btn.className='option-btn';
+    btn.innerHTML=`<span class="opt-letter">${letter}</span><span>${q.options[i].text}</span>`;
+    if(answers[currentQ]===i) btn.classList.add('selected');
+    btn.onclick=()=>selectOption(i,btn);
+    li.appendChild(btn); list.appendChild(li);
+  });
+  document.getElementById('prev-btn').style.visibility = currentQ>0?'visible':'hidden';
+  document.getElementById('next-label').textContent = currentQ===QUESTIONS.length-1?'See My Result':'Next Question';
+  document.getElementById('next-btn').disabled = answers[currentQ]===undefined;
+}
+
+function selectOption(idx,btn) {
+  document.querySelectorAll('.option-btn').forEach(b=>b.classList.remove('selected'));
+  btn.classList.add('selected');
+  answers[currentQ]=idx;
+  document.getElementById('next-btn').disabled=false;
+}
+
+function nextQuestion() {
+  if(answers[currentQ]===undefined) return;
+  scores[QUESTIONS[currentQ].options[answers[currentQ]].type]++;
+  if(currentQ<QUESTIONS.length-1){
+    currentQ++; renderQuestion();
+  } else { showResult(); }
+}
+
+function prevQuestion() {
+  if(currentQ>0){
+    scores[QUESTIONS[currentQ].options[answers[currentQ]].type]=Math.max(0,scores[QUESTIONS[currentQ].options[answers[currentQ]].type]-1);
+    currentQ--; renderQuestion();
+  }
+}
+
+function showResult() {
+  const sorted = Object.entries(scores).sort((a,b)=>b[1]-a[1]);
+  const top = sorted[0][0];
+  currentArchetype = ARCHETYPES[top];
+  const a = currentArchetype;
+  const name = userData.firstName ? userData.firstName : '';
+
+  document.getElementById('result-greeting').textContent = name ? `${name}, your M&A Personality is` : 'Your M&A Personality is';
+  document.getElementById('result-name').textContent = a.name;
+  document.getElementById('result-tagline').textContent = `"${a.tagline}"`;
+  document.getElementById('result-description').textContent = a.description;
+  document.getElementById('result-style').textContent = a.style;
+  document.getElementById('result-strength').textContent = a.strength;
+  document.getElementById('result-weakness').textContent = a.weakness;
+  document.getElementById('result-traits').innerHTML = a.traits.map(t=>`<span class="trait-tag">${t}</span>`).join('');
+  document.getElementById('works-with').textContent = a.worksWith;
+  document.getElementById('works-note').textContent = a.worksNote;
+  document.getElementById('clashes-with').textContent = a.clashesWith;
+  document.getElementById('clashes-note').textContent = a.clashesNote;
+
+  // Populate share card
+  document.getElementById('card-name').textContent = a.name;
+  document.getElementById('card-tagline').textContent = `"${a.tagline}"`;
+  document.getElementById('card-traits').innerHTML = a.traits.map(t=>`<span class="card-trait">${t}</span>`).join('');
+
+  // Show email btn only if email provided
+  const emailBtn = document.getElementById('email-btn');
+  emailBtn.style.display = userData.email ? 'inline-flex' : 'none';
+
+  showScreen('result-screen');
+
+  // Auto-trigger email if configured and email provided
+  if(userData.email && EMAILJS_SERVICE_ID !== 'YOUR_SERVICE_ID') {
+    setTimeout(emailResults, 800);
+  }
+}
+
+// ─── PDF DOWNLOAD ────────────────────────────────────────────────────
+function downloadPDF() {
+  const {jsPDF} = window.jspdf;
+  const doc = new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+  const a = currentArchetype;
+  const W=210, M=20;
+
+  // Background
+  doc.setFillColor(245,240,232);
+  doc.rect(0,0,W,297,'F');
+
+  // Header bar
+  doc.setFillColor(10,10,15);
+  doc.rect(0,0,W,22,'F');
+  doc.setTextColor(201,168,76);
+  doc.setFontSize(8);
+  doc.setFont('helvetica','bold');
+  doc.text('M&A PERSONALITY INDEX  ·  ASSESSMENT REPORT  ·  2025 EDITION',W/2,13,{align:'center'});
+
+  // Gold accent line
+  doc.setDrawColor(201,168,76);
+  doc.setLineWidth(0.8);
+  doc.line(M,30,W-M,30);
+
+  // Label
+  doc.setTextColor(122,113,105);
+  doc.setFontSize(8);
+  doc.setFont('helvetica','normal');
+  doc.text('YOUR M&A PERSONALITY IS', M, 40);
+
+  // Archetype name
+  doc.setTextColor(139,26,26);
+  doc.setFontSize(28);
+  doc.setFont('helvetica','bold');
+  doc.text(a.name, M, 56);
+
+  // Tagline
+  doc.setTextColor(122,113,105);
+  doc.setFontSize(11);
+  doc.setFont('helvetica','italic');
+  doc.text(`"${a.tagline}"`, M, 66);
+
+  // Divider
+  doc.setDrawColor(10,10,15);
+  doc.setLineWidth(0.3);
+  doc.line(M,72,W-M,72);
+
+  // Description
+  doc.setTextColor(44,62,80);
+  doc.setFontSize(9.5);
+  doc.setFont('helvetica','normal');
+  const descLines = doc.splitTextToSize(a.description, W-M*2);
+  doc.text(descLines, M, 82);
+
+  let yPos = 82 + descLines.length*5 + 8;
+
+  // Grid boxes
+  const boxW=(W-M*2-8)/2;
+  const boxes = [
+    {label:'DEAL STYLE', value:a.style},
+    {label:'GREATEST STRENGTH', value:a.strength},
+    {label:'WATCH OUT FOR', value:a.weakness},
+    {label:'CORE TRAITS', value:a.traits.join(' · ')}
+  ];
+  boxes.forEach((box,i)=>{
+    const x=M+(i%2)*(boxW+8);
+    const y=yPos+Math.floor(i/2)*38;
+    doc.setFillColor(255,255,255);
+    doc.setDrawColor(201,168,76);
+    doc.setLineWidth(0.3);
+    doc.roundedRect(x,y,boxW,34,1,1,'FD');
+    doc.setTextColor(201,168,76);
+    doc.setFontSize(7);
+    doc.setFont('helvetica','bold');
+    doc.text(box.label, x+6, y+9);
+    doc.setTextColor(44,62,80);
+    doc.setFontSize(8.5);
+    doc.setFont('helvetica','normal');
+    const lines=doc.splitTextToSize(box.value,boxW-10);
+    doc.text(lines, x+6, y+17);
+  });
+
+  yPos += 84;
+
+  // Deal chemistry
+  doc.setTextColor(10,10,15);
+  doc.setFontSize(13);
+  doc.setFont('helvetica','bold');
+  doc.text('Deal Chemistry', M, yPos);
+  doc.setLineWidth(0.3);
+  doc.setDrawColor(10,10,15);
+  doc.line(M,yPos+3,W-M,yPos+3);
+  yPos+=12;
+
+  const chemBoxes=[
+    {label:'WORKS WELL WITH', name:a.worksWith, note:a.worksNote, color:[139,26,26]},
+    {label:'TENSION WITH', name:a.clashesWith, note:a.clashesNote, color:[44,62,80]}
+  ];
+  chemBoxes.forEach((cb,i)=>{
+    const x=M+i*(boxW+8);
+    doc.setFillColor(255,255,255);
+    doc.setDrawColor(...cb.color);
+    doc.setLineWidth(0.5);
+    doc.roundedRect(x,yPos,boxW,38,1,1,'FD');
+    doc.setTextColor(...cb.color);
+    doc.setFontSize(7);
+    doc.setFont('helvetica','bold');
+    doc.text(cb.label, x+6, yPos+9);
+    doc.setTextColor(10,10,15);
+    doc.setFontSize(10);
+    doc.setFont('helvetica','bold');
+    doc.text(cb.name, x+6, yPos+18);
+    doc.setTextColor(122,113,105);
+    doc.setFontSize(7.5);
+    doc.setFont('helvetica','normal');
+    const nl=doc.splitTextToSize(cb.note,boxW-10);
+    doc.text(nl, x+6, yPos+25);
+  });
+
+  yPos+=50;
+
+  // User info if provided
+  if(userData.firstName||userData.email) {
+    doc.setFillColor(10,10,15);
+    doc.rect(M,yPos,W-M*2,20,'F');
+    doc.setTextColor(201,168,76);
+    doc.setFontSize(7);
+    doc.setFont('helvetica','bold');
+    const info=[userData.firstName&&userData.lastName?`${userData.firstName} ${userData.lastName}`:'',userData.company,userData.role].filter(Boolean).join('  ·  ');
+    if(info) doc.text(info, W/2, yPos+9, {align:'center'});
+    if(userData.email){doc.setTextColor(122,113,105); doc.text(userData.email, W/2, yPos+16, {align:'center'});}
+    yPos+=28;
+  }
+
+  // Footer
+  doc.setFillColor(201,168,76);
+  doc.rect(0,280,W,17,'F');
+  doc.setTextColor(10,10,15);
+  doc.setFontSize(8);
+  doc.setFont('helvetica','bold');
+  doc.text('M&A PERSONALITY INDEX  ·  TAKE THE QUIZ AT: '+QUIZ_URL, W/2, 290, {align:'center'});
+
+  doc.save(`MA-Personality-${a.name.replace(/\s+/g,'-')}.pdf`);
+  showToast('PDF downloaded!');
+}
+
+// ─── EMAIL RESULTS ────────────────────────────────────────────────────
+function emailResults() {
+  if(!userData.email) { showToast('No email address provided.'); return; }
+  if(EMAILJS_SERVICE_ID==='YOUR_SERVICE_ID') {
+    showToast('Email not configured yet. See setup instructions below.');
+    showEmailStatus('error', '⚙ Email not yet configured. See the GitHub README for EmailJS setup instructions (takes ~5 minutes).');
+    return;
+  }
+  const a = currentArchetype;
+  const btn = document.getElementById('email-btn');
+  btn.innerHTML='<span class="icon">⏳</span> Sending...';
+  btn.disabled=true;
+  emailjs.init(EMAILJS_PUBLIC_KEY);
+  emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+    to_email: userData.email,
+    to_name: userData.firstName||'Dealmaker',
+    archetype: a.name,
+    tagline: a.tagline,
+    description: a.description,
+    style: a.style,
+    strength: a.strength,
+    weakness: a.weakness,
+    traits: a.traits.join(', '),
+    works_with: a.worksWith,
+    clashes_with: a.clashesWith,
+    quiz_url: QUIZ_URL
+  }).then(()=>{
+    showEmailStatus('success','✓ Results sent to '+userData.email);
+    btn.innerHTML='<span class="icon">✓</span> Email Sent';
+  }).catch(err=>{
+    showEmailStatus('error','Failed to send email. Please try downloading the PDF instead.');
+    btn.innerHTML='<span class="icon">✉</span> Email My Results';
+    btn.disabled=false;
+    console.error('EmailJS error:',err);
+  });
+}
+
+function showEmailStatus(type,msg) {
+  const el=document.getElementById('email-status');
+  el.className=`email-status ${type}`;
+  el.textContent=msg;
+  el.style.display='block';
+}
+
+// ─── SHARE MODAL ──────────────────────────────────────────────────────
+function openShareModal() {
+  document.getElementById('share-modal').classList.remove('hidden');
+}
+function closeShareModal() {
+  document.getElementById('share-modal').classList.add('hidden');
+}
+
+function shareToLinkedIn() {
+  const text=encodeURIComponent(`I just discovered my M&A personality is "${currentArchetype.name}" — ${currentArchetype.tagline}\n\nFind out yours → ${QUIZ_URL}`);
+  window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(QUIZ_URL)}&summary=${text}`,'_blank');
+}
+
+function shareToTwitter() {
+  const text=encodeURIComponent(`Just took the M&A Personality Index — I'm "${currentArchetype.name}" — "${currentArchetype.tagline}" 🤝\n\nDiscover your dealmaker archetype → ${QUIZ_URL} #MandA #Dealmaking`);
+  window.open(`https://twitter.com/intent/tweet?text=${text}`,'_blank');
+}
+
+function copyShareText() {
+  const text=`My M&A Personality is "${currentArchetype.name}"\n"${currentArchetype.tagline}"\n\nDiscover your dealmaker archetype → ${QUIZ_URL}`;
+  navigator.clipboard.writeText(text).then(()=>showToast('Share text copied to clipboard!')).catch(()=>showToast('Copy failed — try manually.'));
+}
+
+function copyLink() {
+  navigator.clipboard.writeText(QUIZ_URL).then(()=>showToast('Quiz link copied! Share it anywhere.')).catch(()=>showToast('Could not copy. URL: '+QUIZ_URL));
+}
+
+// ─── TOAST ────────────────────────────────────────────────────────────
+function showToast(msg) {
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+function restartQuiz() {
+  scores={A:0,B:0,C:0,D:0}; answers=[]; currentQ=0;
+  document.getElementById('email-status').style.display='none';
+  showScreen('capture-screen');
+}
+</script>
+</body>
+</html>
